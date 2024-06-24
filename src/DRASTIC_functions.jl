@@ -141,3 +141,32 @@ function get_horizontal_pitch(Distance::Matrix{<:Real})
     return Int.(sort(peaks[:,2]))
 end
 
+"""
+function get_maximums(Distance::Matrix{<:Real},peak::Int)
+Function used to get the center of holes, It will takes a matrix of distances using the center of holes as reference color
+and an integer (you first need to run get_horizontal_pitch function ) to scan a band corresponding to the row +/- range 
+"""
+function get_maximums(Distance::Matrix{<:Real},peak::Int,range::Int=7)
+    Band = Float64[]
+    for i = 1 : 1 :length(Distance[:,1])
+        mu = mean(Distance[i,peak-range:peak+range])
+        push!(Band,-mu)
+    end
+    Band_filter = moving_window_filter(Band,40)
+    pm = mean(Band_filter) + std(Band_filter)
+
+    vpitch = find_peaks(Band_filter;minpeakheight=pm,minpeakdistance=150)
+
+    pks = []
+    for i = 1:length(vpitch)
+        if length(vpitch) == 0
+            continue
+        else
+            amplitude = getproperty(vpitch[i], :value)
+            position = getproperty(vpitch[i], :idx)
+            push!(pks,[amplitude position])
+        end
+    end
+    peaks = vcat(pks...)
+    return Int.(sort(peaks[:,2]))
+end
