@@ -112,3 +112,32 @@ function find_peaks(x::AbstractVector{T};
     return peaks
 end
 
+"""
+function get_horizontal_pitch(Distance::Matrix{<:Real})
+function to get the pattern of given structure in a matrix of colors
+The function has been optimized to get the column positions of holes. It assumes that the holes are aligned vertically
+"""
+function get_horizontal_pitch(Distance::Matrix{<:Real})
+    Band = Float64[]
+    for i = 1 : 1 :length(Distance[1,:])
+        mu = mean(Distance[:,i])
+        push!(Band,mu)
+    end
+    Band_filter = moving_window_filter(Band,30)
+    ph = mean(Band_filter)/2
+    vpitch = find_peaks(Band_filter;minpeakheight=ph,minpeakdistance=50)
+
+    pks = []
+    for i = 1:length(vpitch)
+        if length(vpitch) == 0
+            continue
+        else
+            amplitude = getproperty(vpitch[i], :value)
+            position = getproperty(vpitch[i], :idx)
+            push!(pks,[amplitude position])
+        end
+    end
+    peaks = vcat(pks...)
+    return Int.(sort(peaks[:,2]))
+end
+
