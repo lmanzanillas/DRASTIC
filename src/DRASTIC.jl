@@ -15,5 +15,7 @@ using HDF5
 export color_dist 
 export moving_window_filter
 export find_peaks
+export get_horizontal_pitch
+export get_maximums
 
 end # module DRASTIC
