@@ -18,4 +18,7 @@ export find_peaks
 export get_horizontal_pitch
 export get_maximums
 
+include("DRASTIC_functions.jl")
+include("DRASTIC_segmentation.jl")
+
 end # module DRASTIC
