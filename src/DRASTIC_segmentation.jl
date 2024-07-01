@@ -110,12 +110,12 @@ function get_average_color(SectionImg::AbstractArray{RGB{N0f8}},Dist::Matrix{<:R
     average_color_vector = []
     for h = 1 : 1 : length(hPeaks)
         #if too close to border then do not consider the point
-        if abs(hPeaks[h] - size(Dh)[2]) < 2*range || abs(hPeaks[h] - range) < 2*range
+        if abs(hPeaks[h] - size(Dist)[2]) < 2*range || abs(hPeaks[h] - range) < 2*range
             continue
         end
         local_max = get_maximums(Dist,hPeaks[h])
         for lm in local_max
-            if abs(lm - size(Dh)[1]) > 2*range || abs(lm -range) > 2*range
+            if abs(lm - size(Dist)[1]) > 2*range || abs(lm -range) > 2*range
                 push!(average_color_vector,mean(SectionImg[lm - range:lm + range,hPeaks[h] - range:hPeaks[h] + range]))
             end
         end
