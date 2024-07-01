@@ -115,7 +115,7 @@ function get_average_color(SectionImg::AbstractArray{RGB{N0f8}},Dist::Matrix{<:R
         end
         local_max = get_maximums(Dist,hPeaks[h])
         for lm in local_max
-            if abs(lm - size(Dist)[1]) > 2*range || abs(lm -range) > 2*range
+            if abs(lm - size(Dist)[1]) > 2*range && abs(lm -range) > 2*range
                 push!(average_color_vector,mean(SectionImg[lm - range:lm + range,hPeaks[h] - range:hPeaks[h] + range]))
             end
         end
