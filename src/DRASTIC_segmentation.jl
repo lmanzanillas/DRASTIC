@@ -11,3 +11,83 @@ function collect_groups(labels)
     end
     groups
 end
+
+"""
+function divide_img_sq(full_img::AbstractArray{RGB{N0f8}},nPixels::Int = 500)
+function to divide an image in small sections for processing
+The function receives an image of a given size and an integer indicated the size in pixels of the small sections
+"""
+function divide_img_sq(full_img::AbstractArray{RGB{N0f8}},nPixels::Int = 500)
+    vertical_pixels = size(full_img)[1]
+    horizontal_pixels = size(full_img)[2]
+    vertical_chunks = vertical_pixels ÷ nPixels
+    horizontal_chunks = horizontal_pixels ÷ nPixels
+    v_starts = zeros(Int,vertical_chunks)
+    v_ends = zeros(Int,vertical_chunks)
+    Sections = fill(Matrix{RGB{N0f8}},vertical_chunks,horizontal_chunks)
+    ##Find start and end of sections in vertical axis
+    for i = 1 : 1 : vertical_chunks
+        v_s = (i- 1)*nPixels + 1
+        v_e = nPixels * i
+        if i == vertical_chunks
+            v_e = vertical_pixels
+        end
+        v_starts[i] = v_s
+        v_ends[i] = v_e
+        #println("vertical start: ",v_starts," ends: ",v_ends)
+    end
+    ##Find start and end of sections in horizontal axis
+    h_starts = zeros(Int,horizontal_chunks)
+    h_ends = zeros(Int,horizontal_chunks)
+    for i = 1 : 1 : horizontal_chunks
+        h_s = (i- 1)*nPixels + 1
+        h_e = nPixels * i
+        if i == horizontal_chunks
+            h_e = horizontal_pixels
+        end
+        h_starts[i] = h_s
+        h_ends[i] = h_e
+    end
+    ##Do the division
+    s_img = []
+    index_v_h = zeros(Int,vertical_chunks,horizontal_chunks)
+    for i = 1 : 1 : vertical_chunks
+        for j = 1 : 1 : horizontal_chunks
+            segment_img = full_img[v_starts[i]:v_ends[i],h_starts[j]:h_ends[j]]
+            push!(s_img,segment_img)
+            index_v_h[i,j] = (i - 1)*horizontal_chunks + j
+        end
+    end
+    return s_img, index_v_h
+end
+
+"""
+function get_selection(h::Histogram, min_value::Float64)
+function to determine the cut selection according to the distance to a given color
+It has been optimized assuming the hole color is used as reference
+The distance will maximize when copper regions are found and minimize when hole regions are found
+In general min_value of 0.2 is a good starting point
+"""
+function get_selection(h::Histogram, min_value::Float64)
+    observed_counts = h.weights
+    bin_edges = h.edges[1]
+    bin_edges_left = bin_edges[1:end-1]
+    bin_edges_right = bin_edges[2:end]
+    bin_widths = bin_edges_right - bin_edges_left
+    bin_centers = (bin_edges_right + bin_edges_left) / 2
+    start_h = Int(min_value ÷ bin_widths[1])
+    _max = findmax(observed_counts[start_h:end])
+    vmax = _max[1]
+    bmax = _max[2]
+    _min = findmin(observed_counts[start_h:start_h+b_max])
+    vmin = _min[1]
+    bmin = _min[2]
+    cut = 0.
+    for i = start_h + bmin : 1 : start_h + bmax
+        if observed_counts[i] > 1.5 * vmin
+            cut = i * bin_widths[1]
+            break
+        end
+    end
+    return cut
+end

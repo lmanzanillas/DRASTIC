@@ -17,6 +17,9 @@ export moving_window_filter
 export find_peaks
 export get_horizontal_pitch
 export get_maximums
+export collect_groups
+export divide_img_sq
+export get_selection
 
 include("DRASTIC_functions.jl")
 include("DRASTIC_segmentation.jl")
