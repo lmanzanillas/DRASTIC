@@ -99,3 +99,26 @@ function get_selection(h::Histogram, min_value::Float64)
     end
     return cut
 end
+
+"""
+function get_average_color(SectionImg::AbstractArray{RGB{N0f8}},Dist::Matrix{<:Real},hPeaks::Vector{Int},range::Int=5)
+Function to get the average color of the holes in a given image
+It take the image, the matrix distance, and the horizontal pattern hPeaks, and a range that will be used for computing the mean of each hole
+It returns the average hole color of the image
+"""
+function get_average_color(SectionImg::AbstractArray{RGB{N0f8}},Dist::Matrix{<:Real},hPeaks::Vector{Int},range::Int=5)
+    average_color_vector = []
+    for h = 1 : 1 : length(hPeaks)
+        #if too close to border then do not consider the point
+        if abs(hPeaks[h] - size(Dh)[2]) < 2*range || abs(hPeaks[h] - range) < 2*range
+            continue
+        end
+        local_max = get_maximums(Dist,hPeaks[h])
+        for lm in local_max
+            if abs(lm - size(Dh)[1]) > 2*range || abs(lm -range) > 2*range
+                push!(average_color_vector,mean(SectionImg[lm - range:lm + range,hPeaks[h] - range:hPeaks[h] + range]))
+            end
+        end
+    end
+    return HSV{Float32}(mean(average_color_vector))
+end

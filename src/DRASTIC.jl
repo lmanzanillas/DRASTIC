@@ -20,6 +20,7 @@ export get_maximums
 export collect_groups
 export divide_img_sq
 export get_selection
+export get_average_color
 
 include("DRASTIC_functions.jl")
 include("DRASTIC_segmentation.jl")
