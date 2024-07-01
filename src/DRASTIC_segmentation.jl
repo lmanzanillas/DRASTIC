@@ -66,7 +66,7 @@ function get_selection(h::Histogram, min_value::Float64)
 function to determine the cut selection according to the distance to a given color
 It has been optimized assuming the hole color is used as reference
 The distance will maximize when copper regions are found and minimize when hole regions are found
-In general min_value of 0.2 is a good starting point
+In general min_value of 0.3 is a good starting point
 """
 function get_selection(h::Histogram, min_value::Float64)
     observed_counts = h.weights
@@ -75,16 +75,24 @@ function get_selection(h::Histogram, min_value::Float64)
     bin_edges_right = bin_edges[2:end]
     bin_widths = bin_edges_right - bin_edges_left
     bin_centers = (bin_edges_right + bin_edges_left) / 2
+    min_check = 0.2
+    start_check = Int(min_check ÷ bin_widths[1])
+    max_check = findmax(observed_counts[start_check:end])[2] + start_check
     start_h = Int(min_value ÷ bin_widths[1])
+    #security check
+    if abs(max_check - start_h) < 10
+        start_h = start_check
+    end
+    println(max_check," ",start_h)
     _max = findmax(observed_counts[start_h:end])
     vmax = _max[1]
     bmax = _max[2]
-    _min = findmin(observed_counts[start_h:start_h+b_max])
+    _min = findmin(observed_counts[start_h:start_h+bmax])
     vmin = _min[1]
     bmin = _min[2]
     cut = 0.
     for i = start_h + bmin : 1 : start_h + bmax
-        if observed_counts[i] > 1.5 * vmin
+        if observed_counts[i] > 1.3 * vmin
             cut = i * bin_widths[1]
             break
         end
