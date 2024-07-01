@@ -83,7 +83,7 @@ function get_selection(h::Histogram, min_value::Float64)
     if abs(max_check - start_h) < 10
         start_h = start_check
     end
-    println(max_check," ",start_h)
+    #println(max_check," ",start_h)
     _max = findmax(observed_counts[start_h:end])
     vmax = _max[1]
     bmax = _max[2]
