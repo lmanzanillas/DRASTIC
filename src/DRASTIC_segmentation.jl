@@ -118,3 +118,18 @@ function get_average_color(SectionImg::AbstractArray{RGB{N0f8}},Dist::Matrix{<:R
     end
     return HSV{Float32}(mean(average_color_vector))
 end
+
+"""
+function merge_divided_binary_img(v_sections::Vector,index_sections::Matrix{Int})
+function to merge all sections of a segmented image
+it accepts a vector containing the sections and a matrix containing the indices of the sections that 
+are required to the merge
+"""
+function merge_divided_binary_img(v_sections::Vector,index_sections::Matrix{Int})
+    merg_h = []
+    for i = 1 : 1 : length(index_sections[:,1])
+        push!(merg_h,hcat(v_sections[index_sections[i,:]]...))
+    end
+    full_img = vcat(merg_h...)
+    return full_img
+end

@@ -22,6 +22,7 @@ export divide_img_sq
 export get_selection
 export get_max_h
 export get_average_color
+export merge_divided_binary_img
 
 include("DRASTIC_functions.jl")
 include("DRASTIC_segmentation.jl")
