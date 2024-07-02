@@ -133,3 +133,27 @@ function merge_divided_binary_img(v_sections::Vector,index_sections::Matrix{Int}
     full_img = vcat(merg_h...)
     return full_img
 end
+
+"""
+function get_holes_info(comp::BitMatrix, min_area = 5000, max_area = 15000)
+function to get the hole measurements, it take a binary image and obtain the required info
+It will return the coordinates of the center of each hole ant its diameter
+"""
+function get_holes_info(comp::BitMatrix, min_area = 5000, max_area = 15000)
+    components = Images.label_components(comp)
+    measurements = analyze_components(components, BasicMeasurement(area = true, perimeter = true))
+    centroids = component_centroids(components)
+    filter_result = measurements[ min_area .< measurements[!,:area] .< max_area , :]
+    centroids = component_centroids(components)
+    filter_centroides = Tuple{Float64, Float64}[]
+    diam = Float64[]
+    for comp = 1 : 1 : length(filter_result[!,:l])
+        r = sqrt.(filter_result[comp,:area]/pi)#pixels
+        d = 2*r/cte_calib;
+        push!(diam,d)
+        push!(filter_centroides,centroids[filter_result[comp,:l]])
+    end
+    Centers = hcat(first.(filter_centroides), last.(filter_centroides))
+    Diameters = reshape(diam, length(diam), 1)
+    [Centers[:,2] Centers[:,1] Diameters]
+end

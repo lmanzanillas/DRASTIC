@@ -23,6 +23,7 @@ export get_selection
 export get_max_h
 export get_average_color
 export merge_divided_binary_img
+export get_holes_info
 
 include("DRASTIC_functions.jl")
 include("DRASTIC_segmentation.jl")
