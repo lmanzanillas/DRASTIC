@@ -62,42 +62,38 @@ function divide_img_sq(full_img::AbstractArray{RGB{N0f8}},nPixels::Int = 500)
 end
 
 """
-function get_selection(h::Histogram, min_value::Float64)
-function to determine the cut selection according to the distance to a given color
+function get_selection(dist::Matrix{<:Real},max_h::Float64 = 0.2)
+function to get the cut used for the selection of the holes
+It get the dist matrix and the value of the peak distance to copper, which is obtained
+using an histogram
+"""
+function get_selection(dist::Matrix{<:Real},max_h::Float64 = 0.2)
+    v_dist = vcat(dist...)
+    cut_l = max_h / 1.5
+    cut_h = max_h * 1.5
+    f_v_dist = filter(x-> cut_l < x < cut_h,v_dist)
+    std_dev_dist = std(f_v_dist)
+    return max_h - 1.5*std_dev_dist
+end 
+
+
+"""
+function get_max_h(h::Histogram, min_value::Float64)
+function to determine the coordinate of the bin containing the maximum of counts in a histogram
 It has been optimized assuming the hole color is used as reference
 The distance will maximize when copper regions are found and minimize when hole regions are found
-In general min_value of 0.3 is a good starting point
+In general min_value of 0.3 is a good starting point to avoit the peaks close to zero
 """
-function get_selection(h::Histogram, min_value::Float64)
+function get_max_h(h::Histogram, min_value::Float64)
     observed_counts = h.weights
     bin_edges = h.edges[1]
     bin_edges_left = bin_edges[1:end-1]
     bin_edges_right = bin_edges[2:end]
     bin_widths = bin_edges_right - bin_edges_left
     bin_centers = (bin_edges_right + bin_edges_left) / 2
-    min_check = 0.2
-    start_check = Int(min_check ÷ bin_widths[1])
-    max_check = findmax(observed_counts[start_check:end])[2] + start_check
-    start_h = Int(min_value ÷ bin_widths[1])
-    #security check
-    if abs(max_check - start_h) < 10
-        start_h = start_check
-    end
-    #println(max_check," ",start_h)
-    _max = findmax(observed_counts[start_h:end])
-    vmax = _max[1]
-    bmax = _max[2]
-    _min = findmin(observed_counts[start_h:start_h+bmax])
-    vmin = _min[1]
-    bmin = _min[2]
-    cut = 0.
-    for i = start_h + bmin : 1 : start_h + bmax
-        if observed_counts[i] > 1.3 * vmin
-            cut = i * bin_widths[1]
-            break
-        end
-    end
-    return cut
+    start_h = Int(min_value ÷ bin_widths[1]) 
+    _max = findmax(observed_counts[start_h:end])[2] + start_h - 1
+    return bin_centers[_max]
 end
 
 """
