@@ -149,7 +149,7 @@ function get_holes_info(comp::BitMatrix, min_area = 5000, max_area = 15000)
     diam = Float64[]
     for comp = 1 : 1 : length(filter_result[!,:l])
         r = sqrt.(filter_result[comp,:area]/pi)#pixels
-        d = 2*r/cte_calib;
+        d = 2*r;
         push!(diam,d)
         push!(filter_centroides,centroids[filter_result[comp,:l]])
     end
