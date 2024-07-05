@@ -24,8 +24,12 @@ export get_max_h
 export get_average_color
 export merge_divided_binary_img
 export get_holes_info
+export rotate
+export get_index_rows
+export get_pitch
 
 include("DRASTIC_functions.jl")
 include("DRASTIC_segmentation.jl")
+include("DRASTIC_pitch.jl")
 
 end # module DRASTIC

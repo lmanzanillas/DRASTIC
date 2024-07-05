@@ -69,12 +69,12 @@ using an histogram
 """
 function get_selection(dist::Matrix{<:Real},max_h::Float64 = 0.2)
     v_dist = vcat(dist...)
-    cut_l = max_h / 1.5
-    cut_h = max_h * 1.5
+    cut_l = max_h - 0.05
+    cut_h = max_h + 0.05
     f_v_dist = filter(x-> cut_l < x < cut_h,v_dist)
     std_dev_dist = std(f_v_dist)
-    return max_h - 1.5*std_dev_dist
-end 
+    return max_h - 3*std_dev_dist
+end
 
 
 """
