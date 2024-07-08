@@ -127,15 +127,44 @@ And to obtain the info of the holes, just use
 ```python
 results = get_holes_info(full_bin_mirror,min_area_hole,max_area_hole)
 ```
+To plot the results use
+```python
+results_f = filter(x-> 2.3< x < 2.8,results[:,3]/calib)
+μ = round(mean(results_f),digits=3)
+σ = round(std(results_f),digits=3)
+h_pitch = fit(Histogram,results_f,2.2:0.01:2.8)
+plot(h_pitch,st=:step,label="μ = $(μ)mm, σ = $(σ) mm",xlabel="d [mm]",legend=:topright)
+```
+
 ![Alt text](figures/h_diameter.png)
+
+and for the 2D plots use: 
+```python
+scatter(results[:,1]/calib,results[:,2]/calib,xlabel="x[mm]",ylabel="y[mm]",label="",ms = results[:,3]/calib, marker_z = results[:,3]/calib,clims=(2.3,2.55))
+```
 ![Alt text](figures/2d_diameter.png)
 
 abd to obtain the pitch
 ```python
 p = get_pitch(results,calib,0.2)
 ```
-which will return the coordinates and pitch
+which will return the coordinates and pitch. Then you can plot the results. For the histogram of the distribution use
+```python
+p3_f = filter(x-> 2.8< x < 3.1, p[:,3])
+μ = round(mean(p3_f),digits=3)
+σ = round(std(p3_f),digits=3)
+h_pitch = fit(Histogram,p3_f,2.5:0.01:3.1)
+plot(h_pitch,st=:step,label="μ = $(μ)mm, σ = $(σ) mm",xlabel="pitch [mm]",legend=:topleft)
+```
+
 ![Alt text](figures/h_pitch.png)
+
+And for the 2D use
+```python
+p = p[p[:,3] .< 3.1,:]
+scatter(p[:,1]/calib,p[:,2]/calib,marker_z = p[:,3],label="",xlabel="x[mm]",ylabel="y[mm]",clims=(2.85,3.05),colorbar_title ="pitch [mm]")
+```
+
 ![Alt text](figures/2d_pitch.png)
 
 
