@@ -67,7 +67,7 @@ function to get the cut used for the selection of the holes
 It get the dist matrix and the value of the peak distance to copper, which is obtained
 using an histogram
 """
-function get_selection(dist::Matrix{<:Real},max_h::Float64 = 0.2,nSigmas::Int=3)
+function get_selection(dist::Matrix{<:Real},max_h::T = 0.2, nSigmas::T = 3.0) where {T<: AbstractFloat}
     v_dist = vcat(dist...)
     cut_l = max_h - 0.05
     cut_h = max_h + 0.05
@@ -84,7 +84,7 @@ It has been optimized assuming the hole color is used as reference
 The distance will maximize when copper regions are found and minimize when hole regions are found
 In general min_value of 0.3 is a good starting point to avoit the peaks close to zero
 """
-function get_max_h(h::Histogram, min_value::Float64)
+function get_max_h(h::Histogram, min_value::T)where {T<: AbstractFloat}
     observed_counts = h.weights
     bin_edges = h.edges[1]
     bin_edges_left = bin_edges[1:end-1]
