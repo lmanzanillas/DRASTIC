@@ -34,7 +34,8 @@ hole_color = HSV{Float32}( mean(c_img[1505:1550,2635:2685]))
 ## Calibration factor
 The first parameter that we need to find is the calibration factor. To this end the function
 ```python
-get_calibration_factor``` can be used. This function need an image with the red circles and a color as reference, in this case the red color
+get_calibration_factor```
+can be used. This function need an image with the red circles and a color as reference, in this case the red color
 ```python
 calib = get_calibration_factor(c_img,red_color)
 ```
