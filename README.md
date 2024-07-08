@@ -83,7 +83,7 @@ c = get_selection(d_refined,h_max,2.50)
 Then we apply the section to convert the section to a binary image, 1 corresponding to the hole and 0 to the copper, in that way we can isolate the holes for analysis. We can plot to make sure that all worked fine
 ```python
 d_s = d_refined .< c
-heatmap(d_s)``
+heatmap(d_s)```
 
 ![Alt text](figures/binary_section.png)
 
