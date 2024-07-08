@@ -59,4 +59,71 @@ div_img, indexv = divide_img_sq(testing_img,430);
 which will divide the photo in section of 430x430 pixels (except the last section that will be adjusted to keep the total amount of pixels)
 This function will return a vector containing the sections and a matrix containing the position of each section to allow the merging of all sections into the original image
 
+For each section we will find the optimal selection to identify the holes of the PCB. First we founc the distance from each pixel to the hole color. In the following we will use a single section to show how the DRASTIC works
+```python
+d_h = color_dist.(div_img[1],hole_color)
+```
+Then we will find the columns of holes and we will compute the average hole (blueish) color in that section
+```python
+h_peaks = get_horizontal_pitch(d_h)
+h_avg_color = get_average_color(div_img[20],d_h,h_peaks)
+```
+We compute the refined distance using the average hole color of that section and we make an histogram to identify the required cut to isolate the copper regions. The funtion ```get_max_h(h,0.25)``` can be used to find the maximum which corresponds to the copper region, the 0.25 is used to avoid the region of the histogram close to 0. Then the cut is found using ```get_selection(d_refined,h_max,2.50)``` the 2.5 corresponds to 2.5 sigma on the left with respect to the maximum, which works for most of the cases, but 2.5 sigma could be adjusted if needed
+```python
+h = fit(Histogram,vcat(d_refined...),0:0.01:0.75)
+h_max = get_max_h(h,0.25)
+c = get_selection(d_refined,h_max,2.50)
+```
+
+here plot histogram 
+
+Then we apply the section to convert the section to a binary image, 1 corresponding to the hole and 0 to the copper, in that way we can isolate the holes for analysis. We can plot to make sure that all worked fine
+```python
+d_s = d_refined .< c
+heatmap(d_s)``
+
+If the binary image looks ok, we can process and obtain the holes info by using the functions:
+```python
+min_area_hole = π*(calib*2.0/2)^2
+max_area_hole = π*(calib*3.0/2)^2
+s_result = get_holes_info(d_s,min_area_hole,max_area_hole)
+```
+where we have used min_area_hole and max_area_hole to filter the badly reconstructed holes, if all was calibrated correctly, the function will return a matrix with the coordinates and diameter of holes in pixels. If you want to convert the diameter to mm, just use
+```python
+s_result[:,3]/calib
+```
+The values should be close to 2.4mm 
+Once we have verified that all worked fine, we can apply the same procedure but for the image, which will take about 15  min or more depending on your machine.
+```python
+d_selection = []
+for section in div_img 
+    d_h = color_dist.(section,hole_color)
+    h_peaks = get_horizontal_pitch(d_h)
+    h_avg_color = get_average_color(section,d_h,h_peaks)
+    d_refined = color_dist.(section,h_avg_color)
+    h = fit(Histogram,vcat(d_refined...),0:0.01:1.0)
+    h_max = get_max_h(h,0.25)
+    
+    c = get_selection(d_refined,h_max,2.5)
+
+    d_s = d_refined .< c
+    push!(d_selection,d_s)
+end
+```
+You can merge the sections using
+```python
+full_bin = merge_divided_binary_img(d_selection,indexv)
+full_bin = full_bin[end:-1:1,:]
+```
+And to obtain the info of the holes, just use
+```python
+results = get_holes_info(full_bin_mirror,min_area_hole,max_area_hole)
+```
+abd to obtain the pitch
+```python
+p = get_pitch(results,calib,0.2)
+```
+which will return the coordinates and pitch
+
+
 
