@@ -5,7 +5,7 @@ It accepts an image containing the red circles for calibration. It assumes the r
 It also need the red color of that circles, a threshold which if not given is taken as 0.15 which is a good aproximation
 It will return the mean value of the red circles used for the calibration, in general two
 """
-function get_calibration_factor(calib_img::AbstractArray{RGB{N0f8}},red_calib_color::HSV{Float32},threshold::Float64=0.15,d_red_circles::Float64= 10.0)
+function get_calibration_factor(calib_img::AbstractArray{RGB{N0f8}},red_calib_color::HSV{<:AbstractFloat},threshold::T=0.15,d_red_circles::T= 10.0) where {T<: AbstractFloat}
     distance = color_dist.(calib_img,red_calib_color)
     binary_img =  distance .< threshold
     components = Images.label_components(binary_img)
