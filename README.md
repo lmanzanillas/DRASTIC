@@ -24,12 +24,14 @@ Since the axes of the 2D images are in pixels we will need to find a calibration
 
 Then we need to define the color that will be used as reference for the calibration, i.e. the red color. To this end, we will select a region of the red circles that we will convert to the HSV color space. The photo is a matrix of 3456 x 5184 pixels. You can use ```plot(c_img[1900:2050,4300:4500])``` to make sure are selecting the good region.
 
-Here red color
+![Alt text](figures/red_calibration.png)
 
 You can use the same image to define the hole color, which corresponds to the center of the holes (the blueish part). The idea will be take a hole placed in the center of the image. In this case: 
 ```python
 hole_color = HSV{Float32}( mean(c_img[1505:1550,2635:2685]))
 ```
+
+![Alt text](figures/blue_calibration.png)
 
 ## Calibration factor
 The first parameter that we need to find is the calibration factor. To this end the function
@@ -50,7 +52,7 @@ my_photos = light_dir .* filter(x->occursin("002.jpg",x), readdir(light_dir))
 testing_img = load(my_photos[1])
 ```
 
-here photo
+![Alt text](figures/test_img.png)
 
 Since the light can be different in different regions of the photo, we will divide the photo in small section to have more homogenous results in all the photo. To do that, you can use the following function
 ```python
@@ -75,12 +77,15 @@ h_max = get_max_h(h,0.25)
 c = get_selection(d_refined,h_max,2.50)
 ```
 
-here plot histogram 
+
+![Alt text](figures/selection.png)
 
 Then we apply the section to convert the section to a binary image, 1 corresponding to the hole and 0 to the copper, in that way we can isolate the holes for analysis. We can plot to make sure that all worked fine
 ```python
 d_s = d_refined .< c
 heatmap(d_s)``
+
+![Alt text](figures/binary_section.png)
 
 If the binary image looks ok, we can process and obtain the holes info by using the functions:
 ```python
@@ -115,15 +120,22 @@ You can merge the sections using
 full_bin = merge_divided_binary_img(d_selection,indexv)
 full_bin = full_bin[end:-1:1,:]
 ```
+![Alt text](figures/binary_all.png)
+
 And to obtain the info of the holes, just use
 ```python
 results = get_holes_info(full_bin_mirror,min_area_hole,max_area_hole)
 ```
+![Alt text](figures/h_diameter.png)
+![Alt text](figures/2d_diameter.png)
+
 abd to obtain the pitch
 ```python
 p = get_pitch(results,calib,0.2)
 ```
 which will return the coordinates and pitch
+![Alt text](figures/h_pitch.png)
+![Alt text](figures/2d_pitch.png)
 
 
 
