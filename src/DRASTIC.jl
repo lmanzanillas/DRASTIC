@@ -27,9 +27,11 @@ export get_holes_info
 export rotate
 export get_index_rows
 export get_pitch
+export get_calibration_factor
 
 include("DRASTIC_functions.jl")
 include("DRASTIC_segmentation.jl")
 include("DRASTIC_pitch.jl")
+include("DRASTIC_calibration.jl")
 
 end # module DRASTIC
