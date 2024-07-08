@@ -20,7 +20,7 @@ The Quality control of the CRP anodes will check if the pitch of the PCB holes c
 To perform this QC photos will be taken of the PCBs/anodes that will be analyzed to extract the required paramters for the analysis
 Since the axes of the 2D images are in pixels we will need to find a calibration factor to convert pixel units to mm. To this end a photo with calibration red circles will be used. The diameter of these circles is about 10 mm.
 
-![Alt text](https://github.com/lmanzanillas/DRASTIC/tree/master/figures/calibration_img.png)
+![Alt text](figures/calibration_img.png)
 
 Then we need to define the color that will be used as reference for the calibration, i.e. the red color. To this end, we will select a region of the red circles that we will convert to the HSV color space. The photo is a matrix of 3456 x 5184 pixels. You can use ```plot(c_img[1900:2050,4300:4500])``` to make sure are selecting the good region.
 
