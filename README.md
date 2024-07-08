@@ -6,12 +6,12 @@ Julia software developed at LAPP to perform quality assurance/control of DUNE CR
 # Usage
 To use the software you need ot make available in you workspace Julia, which is available at lxplus, cc in2p3, etc 
 Once you have make Julia available, you can simple install the DRASTIC package by doing inside julia
-```
+```python
 ]add https://github.com/lmanzanillas/DRASTIC
 ```
 The previous command will install the DRASTIC package 
 In addition to the DRASTIC package we recomend to install the following complementary packages for analyzing the results
-```
+```python
 ]add Images, ImageFeatures, FileIO, Plots, ImageComponentAnalysis, Statistics, StatsBase, HDF5
 ```
 
