@@ -67,13 +67,13 @@ function to get the cut used for the selection of the holes
 It get the dist matrix and the value of the peak distance to copper, which is obtained
 using an histogram
 """
-function get_selection(dist::Matrix{<:Real},max_h::Float64 = 0.2)
+function get_selection(dist::Matrix{<:Real},max_h::Float64 = 0.2,nSigmas::Int=3)
     v_dist = vcat(dist...)
     cut_l = max_h - 0.05
     cut_h = max_h + 0.05
     f_v_dist = filter(x-> cut_l < x < cut_h,v_dist)
     std_dev_dist = std(f_v_dist)
-    return max_h - 3*std_dev_dist
+    return max_h - nSigmas*std_dev_dist
 end
 
 
