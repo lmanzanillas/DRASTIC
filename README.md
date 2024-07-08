@@ -27,21 +27,22 @@ Then we need to define the color that will be used as reference for the calibrat
 Here red color
 
 You can use the same image to define the hole color, which corresponds to the center of the holes (the blueish part). The idea will be take a hole placed in the center of the image. In this case: 
-```
+```python
 hole_color = HSV{Float32}( mean(c_img[1505:1550,2635:2685]))
 ```
 
 ## Calibration factor
 The first parameter that we need to find is the calibration factor. To this end the function
-```get_calibration_factor``` can be used. This function need an image with the red circles and a color as reference, in this case the red color
-```
+```python
+get_calibration_factor``` can be used. This function need an image with the red circles and a color as reference, in this case the red color
+```python
 calib = get_calibration_factor(c_img,red_color)
 ```
 
 ## Analysis  of a photo
 Once the calibration factor has been found we can proceed with the analysis
 First we read a photo for the analysis
-```
+```python
 light_dir = "/home/manzanilla/Pictures/DUNE_PCBs_QA/50mm_test/"
 my_photos = light_dir .* filter(x->occursin("002.jpg",x), readdir(light_dir))
 testing_img = load(my_photos[1])
