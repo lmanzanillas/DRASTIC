@@ -18,7 +18,7 @@ In addition to the DRASTIC package we recomend to install the following compleme
 # Step by step example
 The Quality control of the CRP anodes will check if the pitch of the PCB holes correspond to the required specifications and if no anomalous pattern is observed
 To perform this QC photos will be taken of the PCBs/anodes that will be analyzed to extract the required paramters for the analysis
-Since the axes of the 2D images are in pixels we will need to find a calibration factor to convert pixel units to mm. To this end a photo with calibration red circles will be used. The diameter of this circles is about 10 mm.
+Since the axes of the 2D images are in pixels we will need to find a calibration factor to convert pixel units to mm. To this end a photo with calibration red circles will be used. The diameter of these circles is about 10 mm.
 
 Here photo
 
