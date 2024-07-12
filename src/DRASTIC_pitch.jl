@@ -76,5 +76,14 @@ function get_section_merged(base_dir::String,photo_list::Vector{Int64}, dx::Real
     d_cut_high = expected_pitch + 0.3
     x_cut_low = 150.
     x_cut_high = x_size - 150.
-    println("Hello")
+    for photo in photo_list
+        counter += 1
+        my_file = filter(x->occursin("0"*string(photo)*".h5",x),  h5_files)
+        if length(my_file) == 0
+            continue
+        end
+        dy = y_size*counter
+	datos = h5read(my_file[1], "Diameter")
+    end
+    return 0
 end
