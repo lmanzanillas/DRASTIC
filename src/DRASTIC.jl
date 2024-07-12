@@ -28,6 +28,7 @@ export rotate
 export get_index_rows
 export get_pitch
 export get_calibration_factor
+export get_section_merged
 
 include("DRASTIC_functions.jl")
 include("DRASTIC_segmentation.jl")

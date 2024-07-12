@@ -67,3 +67,45 @@ function get_pitch(Data::Matrix{<:Real},calib=45.0,tolerance = 0.2)
     end
     return vcat(PITCH...)
 end
+
+```
+function get_section_merged(base_dir::String,photo_list::Vector{Int64}, Δx::Real,x_size::Real,y_size::Real,my_cte::Real=31.0,rot_angle::Real=0., expected_pitch::Real = 2.94)
+function to merge a selection of photos taken above a same pcb
+it accepts the a list containing the number of the photos sorted by column from bottom to top
+and a deltax to apply when moving to a new column
+In addition a rotation angle in degrees can be given with the expected pithc in that direction
+```
+function get_section_merged(base_dir::String,photo_list::Vector{Int64}, Δx::Real,x_size::Real,y_size::Real,my_cte::Real=31.0,rot_angle::Real=0., expected_pitch::Real = 2.94)
+    h5_files = base_dir*"/".*readdir(base_dir);
+    counter = 0
+    Column = []
+    d_cut_low = expected_pitch - 0.3
+    d_cut_high = expected_pitch + 0.3
+    x_cut_low = 150.
+    x_cut_high = x_size - 150.
+    for photo in photo_list
+        counter += 1
+        my_file = filter(x->occursin("0$(photo).h5",x),  h5_files)
+        if length(my_file) == 0
+            continue
+        end
+        Δy = y_size*counter
+        datos = h5read(my_file[1], "Diameter")
+        #rotate the data to find the pitch in a given direction
+        data = DRASTIC.rotate(datos,rot_angle)
+        p = h5read(my_file[1], "Pitch")
+        pitch = get_pitch(data,my_cte,0.25)
+        pitch = pitch[ d_cut_low .< pitch[:,3] .<  d_cut_high, :]
+        #rotate the data to return to the original position
+        pitch = DRASTIC.rotate(pitch,-rot_angle)
+        pitch = pitch[ x_cut_low .< pitch[:,1] .<  x_cut_high, :]
+
+        new_y = Δy .+ pitch[:,2]
+        new_x = pitch[:,1] .+ Δx
+        new_z = pitch[:,3]
+
+        col = [new_x new_y new_z]
+        push!(Column,col)
+    end
+    return vcat(Column...)
+end
