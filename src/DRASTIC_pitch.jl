@@ -69,7 +69,7 @@ function get_pitch(Data::Matrix{<:Real},calib=45.0,tolerance = 0.2)
 end
 
 ```
-function get_section_merged(base_dir::String,photo_list::Vector{Int64}, Δx::Real,x_size::Real,y_size::Real,my_cte::Real=31.0,rot_angle::Real=0., expected_pitch::Real = 2.94)
+function get_section_merged(base_dir::String,photo_list::Vector{Int64}, dx::Real,x_size::Real,y_size::Real,my_cte::Real=31.0,rot_angle::Real=0., expected_pitch::Real = 2.94)
 function to merge a selection of photos taken above a same pcb
 it accepts the a list containing the number of the photos sorted by column from bottom to top
 and a deltax to apply when moving to a new column
@@ -85,7 +85,7 @@ function get_section_merged(base_dir::String,photo_list::Vector{Int64}, dx::Real
     x_cut_high = x_size - 150.
     for photo in photo_list
         counter += 1
-        my_file = filter(x->occursin("0\$(photo).h5",x),  h5_files)
+        my_file = filter(x->occursin("0$(photo).h5",x),  h5_files)
         if length(my_file) == 0
             continue
         end
