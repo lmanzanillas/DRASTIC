@@ -84,6 +84,21 @@ function get_section_merged(base_dir::String,photo_list::Vector{Int64}, dx::Real
         end
         dy = y_size*counter
 	datos = h5read(my_file[1], "Diameter")
+	#rotate the data to find the pitch in a given direction
+        data = DRASTIC.rotate(datos,rot_angle)
+        p = h5read(my_file[1], "Pitch")
+        pitch = get_pitch(data,my_cte,0.25)
+        pitch = pitch[ d_cut_low .< pitch[:,3] .<  d_cut_high, :]
+        #rotate the data to return to the original position
+        pitch = DRASTIC.rotate(pitch,-rot_angle)
+        pitch = pitch[ x_cut_low .< pitch[:,1] .<  x_cut_high, :]
+
+        new_y = dy .+ pitch[:,2]
+        new_x = pitch[:,1] .+ dx
+        new_z = pitch[:,3]
+
+        col = [new_x new_y new_z]
+        push!(Column,col)
     end
-    return 0
+    return vcat(Column...)
 end
