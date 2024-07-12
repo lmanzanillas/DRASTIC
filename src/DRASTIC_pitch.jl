@@ -85,7 +85,7 @@ function get_section_merged(base_dir::String,photo_list::Vector{Int64}, dx::Real
     x_cut_high = x_size - 150.
     for photo in photo_list
         counter += 1
-        my_file = filter(x->occursin("0$(photo).h5",x),  h5_files)
+        my_file = filter(x->occursin("0"*string(photo)*".h5",x),  h5_files)
         if length(my_file) == 0
             continue
         end
