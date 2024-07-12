@@ -69,13 +69,13 @@ function get_pitch(Data::Matrix{<:Real},calib=45.0,tolerance = 0.2)
 end
 
 ```
-function get_section_merged(base_dir::String,photo_list::Vector{Int64}, dx::Real,x_size::Real,y_size::Real,my_cte::Real=31.0,rot_angle::Real=0., expected_pitch::Real = 2.94)
+function get_section_merged(base_dir::String,photo_list::Vector{Int64},dx::Real,x_size::Real,y_size::Real,my_cte::Real=31.0,rot_angle::Real=0., expected_pitch::Real = 2.94)
 function to merge a selection of photos taken above a same pcb
 it accepts the a list containing the number of the photos sorted by column from bottom to top
 and a deltax to apply when moving to a new column
 In addition a rotation angle in degrees can be given with the expected pithc in that direction
 ```
-function get_section_merged(base_dir::String,photo_list::Vector{Int64}, dx::Real,x_size::Real,y_size::Real,my_cte::Real=31.0,rot_angle::Real=0., expected_pitch::Real = 2.94)
+function get_section_merged(base_dir::String,photo_list::Vector{Int64},dx::Real,x_size::Real,y_size::Real,my_cte::Real=31.0,rot_angle::Real=0., expected_pitch::Real = 2.94)
    # h5_files = base_dir*"/".*readdir(base_dir);
     counter = 0
     Column = []
