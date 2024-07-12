@@ -76,7 +76,7 @@ and a deltax to apply when moving to a new column
 In addition a rotation angle in degrees can be given with the expected pithc in that direction
 ```
 function get_section_merged(base_dir::String,photo_list::Vector{Int64}, dx::Real,x_size::Real,y_size::Real,my_cte::Real=31.0,rot_angle::Real=0., expected_pitch::Real = 2.94)
-    h5_files = base_dir*"/".*readdir(base_dir);
+    h5_files = base_dir*"\/".*readdir(base_dir);
     counter = 0
     Column = []
     d_cut_low = expected_pitch - 0.3
