@@ -75,7 +75,7 @@ it accepts the a list containing the number of the photos sorted by column from 
 and a deltax to apply when moving to a new column
 In addition a rotation angle in degrees can be given with the expected pithc in that direction
 ```
-function get_section_merged(base_dir::String,photo_list::Vector{Int64}, Δx::Real,x_size::Real,y_size::Real,my_cte::Real=31.0,rot_angle::Real=0., expected_pitch::Real = 2.94)
+function get_section_merged(base_dir::String,photo_list::Vector{Int64}, dx::Real,x_size::Real,y_size::Real,my_cte::Real=31.0,rot_angle::Real=0., expected_pitch::Real = 2.94)
     h5_files = base_dir*"/".*readdir(base_dir);
     counter = 0
     Column = []
@@ -89,7 +89,7 @@ function get_section_merged(base_dir::String,photo_list::Vector{Int64}, Δx::Rea
         if length(my_file) == 0
             continue
         end
-        Δy = y_size*counter
+        dy = y_size*counter
         datos = h5read(my_file[1], "Diameter")
         #rotate the data to find the pitch in a given direction
         data = DRASTIC.rotate(datos,rot_angle)
@@ -100,8 +100,8 @@ function get_section_merged(base_dir::String,photo_list::Vector{Int64}, Δx::Rea
         pitch = DRASTIC.rotate(pitch,-rot_angle)
         pitch = pitch[ x_cut_low .< pitch[:,1] .<  x_cut_high, :]
 
-        new_y = Δy .+ pitch[:,2]
-        new_x = pitch[:,1] .+ Δx
+        new_y = dy .+ pitch[:,2]
+        new_x = pitch[:,1] .+ dx
         new_z = pitch[:,3]
 
         col = [new_x new_y new_z]
