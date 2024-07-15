@@ -68,12 +68,12 @@ function get_pitch(Data::Matrix{<:Real},calib=45.0,tolerance = 0.2)
     return vcat(PITCH...)
 end
 
-function get_section_merged(base_dir::String,photo_list::Vector{Int64}, dx::Real,x_size::Real,y_size::Real,my_cte::Real=31.0,rot_angle::Real=0., expected_pitch::Real = 2.94)
+function get_section_merged(base_dir::String,photo_list::Vector{Int64}, dx::Real,x_size::Real,y_size::Real,my_cte::Real=31.0,rot_angle::Real=0., expected_pitch::Real = 2.94, tolerance::Real=0.3)
     h5_files = base_dir*"/".*readdir(base_dir);
     counter = 0
     Column = []
-    d_cut_low = expected_pitch - 0.3
-    d_cut_high = expected_pitch + 0.3
+    d_cut_low = expected_pitch - tolerance
+    d_cut_high = expected_pitch + tolerance
     x_cut_low = 150.
     x_cut_high = x_size - 150.
     for photo in photo_list
@@ -86,8 +86,7 @@ function get_section_merged(base_dir::String,photo_list::Vector{Int64}, dx::Real
 	datos = h5read(my_file[1], "Diameter")
 	#rotate the data to find the pitch in a given direction
         data = DRASTIC.rotate(datos,rot_angle)
-        p = h5read(my_file[1], "Pitch")
-        pitch = get_pitch(data,my_cte,0.25)
+        pitch = get_pitch(data,my_cte,tolerance)
         pitch = pitch[ d_cut_low .< pitch[:,3] .<  d_cut_high, :]
         #rotate the data to return to the original position
         pitch = DRASTIC.rotate(pitch,-rot_angle)
