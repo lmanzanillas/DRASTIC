@@ -96,7 +96,7 @@ If the binary image looks ok, we can process and obtain the holes info by using 
 ```python
 min_area_hole = π*(calib*2.0/2)^2
 max_area_hole = π*(calib*3.0/2)^2
-s_result = get_holes_info(d_s,min_area_hole,max_area_hole)
+s_result = get_holes_basic_info(d_s,min_area_hole,max_area_hole)
 ```
 where we have used min_area_hole and max_area_hole to filter the badly reconstructed holes, if all was calibrated correctly, the function will return a matrix with the coordinates and diameter of holes in pixels. If you want to convert the diameter to mm, just use
 ```python
@@ -129,7 +129,7 @@ full_bin = full_bin[end:-1:1,:]
 
 And to obtain the info of the holes, just use
 ```python
-results = get_holes_info(full_bin_mirror,min_area_hole,max_area_hole)
+results = get_holes_basic_info(full_bin_mirror,min_area_hole,max_area_hole)
 ```
 To plot the results use
 ```python
