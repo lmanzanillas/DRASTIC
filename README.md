@@ -3,7 +3,7 @@
 
 Julia software developed at LAPP to perform quality assurance/control of DUNE CRP anodes based on image analysis
 # Tutorials 
-Two notebook tutorials can be found in [CERN box]((https://cernbox.cern.ch/s/MNmZZNhBEWaZtaG).  
+Two notebook tutorials can be found in [CERN box](https://cernbox.cern.ch/s/MNmZZNhBEWaZtaG).  
 # Usage
 To use the software you need ot make available in you workspace Julia, which is available at lxplus, cc in2p3, etc 
 Once you have make Julia available, you can simple install the DRASTIC package by doing inside julia
