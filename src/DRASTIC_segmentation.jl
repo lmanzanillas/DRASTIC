@@ -157,3 +157,26 @@ function get_holes_info(comp::BitMatrix, min_area = 5000, max_area = 15000)
     Diameters = reshape(diam, length(diam), 1)
     [Centers[:,2] Centers[:,1] Diameters]
 end
+
+"""
+function get_holes_basic_info(comp::BitMatrix, min_area = 5000, max_area = 15000)
+Similar to get_holes_info but much faster since it uses a much simpler algorith
+results should be comparable
+"""
+function get_holes_basic_info(comp::BitMatrix, min_area = 5000, max_area = 15000)
+    components = Images.label_components(comp)
+    centroids = component_centroids(components)
+    filter_centroides = Tuple{Float64, Float64}[]
+    groups = collect_groups(components)
+    diameters = Float64[]
+    for g = 1 : 1 : length(groups)
+        area_group = length(groups[g])
+        if min_area < area_group && area_group < max_area
+            push!(diameters,2*sqrt.(area_group/pi))
+            push!(filter_centroides,centroids[g])
+        end
+    end
+    Centers = hcat(first.(filter_centroides), last.(filter_centroides))
+    Diameters = reshape(diameters, length(diameters), 1)
+    return [Centers[:,2] Centers[:,1] Diameters]
+end

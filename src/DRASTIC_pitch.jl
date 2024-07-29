@@ -68,6 +68,11 @@ function get_pitch(Data::Matrix{<:Real},calib=45.0,tolerance = 0.2)
     return vcat(PITCH...)
 end
 
+"""
+function get_section_merged(base_dir::String,photo_list::Vector{Int64}, dx::Real,x_size::Real,y_size::Real,my_cte::Real=31.0,rot_angle::Real=0., expected_pitch::Real = 2.94, tolerance::Real=0.3)
+Function to merge photos of aa given photo shooting campaing
+The list of photos is needed to do the merge. This list is provided by the person doing the photo shooting
+"""
 function get_section_merged(base_dir::String,photo_list::Vector{Int64}, dx::Real,x_size::Real,y_size::Real,my_cte::Real=31.0,rot_angle::Real=0., expected_pitch::Real = 2.94, tolerance::Real=0.3)
     h5_files = base_dir*"/".*readdir(base_dir);
     counter = 0
