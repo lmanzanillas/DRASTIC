@@ -120,6 +120,27 @@ function get_average_color(SectionImg::AbstractArray{RGB{N0f8}},Dist::Matrix{<:R
 end
 
 """
+function get_average_color_cu(SectionImg::AbstractArray{RGB{N0f8}},Dist::Matrix{<:Real},hPeaks::Vector{Int},range::Int=5)
+same as get_average_color but use instead copper color
+"""
+function get_average_color_cu(SectionImg::AbstractArray{RGB{N0f8}},Dist::Matrix{<:Real},hPeaks::Vector{Int},range::Int=5)
+    average_color_vector = []
+    for h = 1 : 1 : length(hPeaks)
+        #if too close to border then do not consider the point
+        if abs(hPeaks[h] - size(Dist)[2]) < 2*range || abs(hPeaks[h] - range) < 2*range
+            continue
+        end
+        local_max = get_maximums(-Dist,hPeaks[h])
+        for lm in local_max
+            if abs(lm - size(Dist)[1]) > 2*range && abs(lm -range) > 2*range
+                push!(average_color_vector,mean(SectionImg[lm - range:lm + range,hPeaks[h] - range:hPeaks[h] + range]))
+            end
+        end
+    end
+    return HSV{Float32}(mean(average_color_vector))
+end
+
+"""
 function merge_divided_binary_img(v_sections::Vector,index_sections::Matrix{Int})
 function to merge all sections of a segmented image
 it accepts a vector containing the sections and a matrix containing the indices of the sections that 
