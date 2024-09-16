@@ -148,6 +148,7 @@ and an integer (you first need to run get_horizontal_pitch function ) to scan a 
 """
 function get_maximums(Distance::Matrix{<:Real},peak::Int,range::Int=7)
     Band = Float64[]
+    maxs = Int[]
     for i = 1 : 1 :length(Distance[:,1])
         mu = mean(Distance[i,peak-range:peak+range])
         push!(Band,-mu)
@@ -168,5 +169,8 @@ function get_maximums(Distance::Matrix{<:Real},peak::Int,range::Int=7)
         end
     end
     peaks = vcat(pks...)
-    return Int.(sort(peaks[:,2]))
+    if length(peaks) > 0
+        maxs = Int.(sort(peaks[:,2]))
+    end
+    return maxs
 end
