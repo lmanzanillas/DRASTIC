@@ -155,7 +155,10 @@ function get_maximums(Distance::Matrix{<:Real},peak::Int,range::Int=7)
     end
     Band_filter = moving_window_filter(Band,40)
     pm = mean(Band_filter) + std(Band_filter)
-
+    #check if pm is larger than maximum and adjust if needed
+    if pm > maximum(Band_filter)
+        pm = mean(Band_filter) + std(Band_filter)/2
+    end
     vpitch = find_peaks(Band_filter;minpeakheight=pm,minpeakdistance=150)
 
     pks = []
