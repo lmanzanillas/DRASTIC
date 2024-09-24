@@ -108,19 +108,19 @@ function get_section_merged(base_dir::String,photo_list::Vector{Int64}, dx::Real
 end
 
 """
-function get_section_merged_diameter(base_dir::String,photo_list::Vector{Int64}, dx::Real,x_size::Real,y_size::Real,my_cte::Real=31.0,rot_angle::Real=0., expected_diam::Real = 2.94, tolerance::Real=0.3)
+function get_section_merged_diameter(base_dir::String,photo_list::Vector{Int64}, dx::Real,x_size::Real,y_size::Real,my_cte::Real=31.0,rot_angle::Real=0., expected_diam::Real = 2.94, tolerance::Real=0.3, cut_x_h::Real=150., cut_x_l::Real=150., cut_y_h::Real=150., cut_y_l::Real=150.)
 function to merge photos using diameters of holes
 """
-function get_section_merged_diameter(base_dir::String,photo_list::Vector{Int64}, dx::Real,x_size::Real,y_size::Real,my_cte::Real=31.0,rot_angle::Real=0., expected_diam::Real = 2.94, tolerance::Real=0.3)
+function get_section_merged_diameter(base_dir::String,photo_list::Vector{Int64}, dx::Real,x_size::Real,y_size::Real,my_cte::Real=31.0,rot_angle::Real=0., expected_diam::Real = 2.94, tolerance::Real=0.3, cut_x_h::Real=150., cut_x_l::Real=150., cut_y_h::Real=150., cut_y_l::Real=150.)
     h5_files = base_dir*"/".*readdir(base_dir);
     counter = 0
     Column = []
     d_cut_low = expected_diam - tolerance
     d_cut_high = expected_diam + tolerance
-    x_cut_low = 150.
-    x_cut_high = x_size - 150.
-    y_cut_low = 150.
-    y_cut_high = y_size - 150.
+    x_cut_low = cut_x_l
+    x_cut_high = x_size - cut_x_h
+    y_cut_low = cut_y_h
+    y_cut_high = y_size - cut_y_l
     for photo in photo_list
         counter += 1
         my_file = filter(x->occursin("0"*string(photo)*".h5",x),  h5_files)
