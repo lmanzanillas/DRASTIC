@@ -5,7 +5,7 @@ Julia software developed at LAPP to perform quality assurance/control of DUNE CR
 # Tutorials 
 Two notebook tutorials can be found in [CERN box](https://cernbox.cern.ch/s/MNmZZNhBEWaZtaG).  
 # Usage
-To use the software you need ot make available in your workspace Julia, which is available at lxplus, cc in2p3, etc 
+To use the software you need to make available in your workspace Julia, which is available at lxplus, cc in2p3, etc 
 Once you have Julia available, you can simple install the DRASTIC package by doing inside julia
 If you need to install julia in your computer you can check here: [install julia](https://julialang.org/downloads/platform/)
 ```python
@@ -24,14 +24,14 @@ Since the axes of the 2D images are in pixels we will need to find a calibration
 
 ![Alt text](figures/calibration_img.png)
 
-Then we need to define the color that will be used as reference for the calibration, i.e. the red color. To this end, we will select a region of the red circles that we will convert to the HSV color space. The photo is a matrix of 3456 x 5184 pixels. You can use ```plot(c_img[1900:2050,4300:4500])``` (adjust according to the position of the red circles) to make sure are selecting the good region.
+Then we need to define the color that will be used as reference for the calibration, i.e. the red color. To this end, we will select a region of the red circles that we will convert to the HSV color space. The photo is a matrix of 3456 x 5184 pixels (or different depending on your camera). You can use ```plot(c_img[1900:2050,4300:4500])``` (adjust according to the position of the red circles) to make sure you are selecting the good region.
 ```python
 red_color = HSV{Float32}( (mean(c_img[300:500,600:800]) + mean(c_img[1900:2050,4300:4500]))/2)
 ```
 
 ![Alt text](figures/red_calibration.png)
 
-You can use the same image to define the hole color, which corresponds to the center of the holes (the blueish part). The idea will be take a hole placed in the center of the image. In this case: 
+You can use the same image to define the hole color, which corresponds to the center of the holes (the blueish part). The idea will be to take a hole placed in the center of the image. In this case: 
 ```python
 hole_color = HSV{Float32}( mean(c_img[1505:1550,2635:2685]))
 ```
@@ -39,7 +39,7 @@ hole_color = HSV{Float32}( mean(c_img[1505:1550,2635:2685]))
 ![Alt text](figures/blue_calibration.png)
 
 ## Calibration factor
-The first parameter that we need to find is the calibration factor that will allow to convert pixel to mm. To this end the function
+The first parameter that we need to find is the calibration factor that will allow us to convert pixel to mm. For this the function
 ```python
 get_calibration_factor
 ```
@@ -63,14 +63,14 @@ Since the light can be different in different regions of the photo, we will divi
 ```python
 div_img, indexv = divide_img_sq(testing_img,430);
 ```
-which will divide the photo in section of 430x430 pixels (except the last section that will be adjusted to keep the total amount of pixels)
+which will divide the photo in section of 430x430 pixels (except the last section that will be adjusted to keep the total amount of pixels). In any try to have an homogenous light to obtain better precission.
 This function will return a vector containing the sections and a matrix containing the position of each section to allow the merging of all sections into the original image
 
-For each section we will find the optimal selection to identify the holes of the PCB. First we find the distance from each pixel to the hole color. In the following we will use a single section to show how the DRASTIC works
+For each section we will find the optimal selection to identify the holes of the PCB. First we find the distance from the color of each pixel to the hole color. In the following we will use a single section to show how the DRASTIC package works
 ```python
 d_h = color_dist.(div_img[1],hole_color)
 ```
-Then we will find the columns of holes and we will compute the average hole (blueish) color in that section
+Then we will find the columns of holes and we will compute the average hole (blueish) color in that section. We do this because the light is not the same in all regions, then the numerical value of the colors changes in different regions of the photo.
 ```python
 h_peaks = get_horizontal_pitch(d_h)
 h_avg_color = get_average_color(div_img[20],d_h,h_peaks)
@@ -81,7 +81,11 @@ h = fit(Histogram,vcat(d_refined...),0:0.01:0.75)
 h_max = get_max_h(h,0.25)
 c = get_selection(d_refined,h_max,2.50)
 ```
-
+The previous part can be replaced by 
+```python
+get_average_color_cu(div_img[section_to_plot],d_h,h_peaks)
+```
+Which works better in some cases, but the principle is the same.
 
 ![Alt text](figures/selection.png)
 
@@ -99,7 +103,7 @@ min_area_hole = π*(calib*2.0/2)^2
 max_area_hole = π*(calib*3.0/2)^2
 s_result = get_holes_basic_info(d_s,min_area_hole,max_area_hole)
 ```
-where we have used min_area_hole and max_area_hole to filter the badly reconstructed holes, if all was calibrated correctly, the function will return a matrix with the coordinates and diameters of holes in pixels. If you want to convert the diameter to mm, just use
+where we have used min_area_hole and max_area_hole to filter the badly reconstructed holes, and we assume that the area should be close to circles of 2.4 mm. If all was calibrated correctly, the function will return a matrix with the coordinates and diameters of holes in pixels. If you want to convert the diameter to mm, just use
 ```python
 s_result[:,3]/calib
 ```
@@ -137,8 +141,8 @@ To plot the results use
 results_f = filter(x-> 2.3< x < 2.8,results[:,3]/calib)
 μ = round(mean(results_f),digits=3)
 σ = round(std(results_f),digits=3)
-h_pitch = fit(Histogram,results_f,2.2:0.01:2.8)
-plot(h_pitch,st=:step,label="μ = $(μ)mm, σ = $(σ) mm",xlabel="d [mm]",legend=:topright)
+h_diameter = fit(Histogram,results_f,2.2:0.01:2.8)
+plot(h_diameter,st=:step,label="μ = $(μ)mm, σ = $(σ) mm",xlabel="d [mm]",legend=:topright)
 ```
 
 ![Alt text](figures/h_diameter.png)
