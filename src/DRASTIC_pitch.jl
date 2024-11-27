@@ -26,7 +26,7 @@ function get_index_rows(Data::Matrix{<:Real},Calib=33.9)
         if h == length(Data[:,2])
             row_ends = h
         end
-        if Data[h,2] - Data[h-1,2] >  Calib* 1.0
+        if Data[h,2] - Data[h-1,2] >  Calib* 1.0/2
             row_ends = h - 1
             push!(Index_transition,[row_starts row_ends])
             row_starts = h
