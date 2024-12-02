@@ -179,15 +179,31 @@ function get_maximums(Distance::Matrix{<:Real},peak::Int,range::Int=7)
 end
 
 """
-function correct_slope(datos::Matrix{<:Real}, slope::Float64)
+function correct_slope_x(datos::Matrix{<:Real}, slope_x::Float64)
+It assumes your data is according to: x y p
 Function to correct the slope when the camera is not completely horizontal
 You first need to find the slope and then give it as input to the function
 """
-function correct_slope(datos::Matrix{<:Real}, slope::Float64)
+function correct_slope_x(datos::Matrix{<:Real}, slope_x::Real)
     new_signal = Vector{AbstractFloat}(undef, length(datos[:,3]))
     new_signal[1] = datos[1,3]
     for i =2:1:length(datos[:,3])
-        new_signal[i] =  datos[i,3] - datos[i,1]* slope
+        new_signal[i] =  datos[i,3] - datos[i,1]* slope_x
+    end
+    return [datos[:,1] datos[:,2] new_signal]
+end
+
+"""
+function correct_slope_y(datos::Matrix{<:Real}, slope_y::Float64)
+It assumes your data is according to: x y p
+Function to correct the slope when the camera is not completely horizontal
+You first need to find the slope and then give it as input to the function
+"""
+function correct_slope_y(datos::Matrix{<:Real}, slope_y::Real)
+    new_signal = Vector{AbstractFloat}(undef, length(datos[:,3]))
+    new_signal[1] = datos[1,3]
+    for i =2:1:length(datos[:,3])
+        new_signal[i] =  datos[i,3] - datos[i,2]* slope_y
     end
     return [datos[:,1] datos[:,2] new_signal]
 end
