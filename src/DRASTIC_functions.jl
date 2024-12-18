@@ -1,19 +1,25 @@
 """
-function color_dist(a::Color, b::Color)
-function to get the distance between two colors in HSV color space
-Each color is converted to HSV color space using cylindrical coordinates and then the cartesian distance is computed
+    color_dist(a::Color, b::Color) -> Float64
+
+Computes the Euclidean distance between two colors `a` and `b` 
+in the HSV (Hue, Saturation, Value) color space.
+
+# Arguments:
+- `a::Color`: The first color.
+- `b::Color`: The second color.
+
+# Returns:
+- The Euclidean distance between the two colors in HSV space.
 """
-function color_dist(a::Color, b::Color)
+function color_dist(a::Color, b::Color)::Float64
     @fastmath begin
         ca = convert(HSV, a)
         cb = convert(HSV, b)
-        x1 = ca.s * cos(deg2rad(ca.h))
-        y1 = ca.s * sin(deg2rad(ca.h))
-        z1 = ca.v
-        x2 = cb.s * cos(deg2rad(cb.h))
-        y2 = cb.s * sin(deg2rad(cb.h))
-        z2 = cb.v
-        dist = sqrt( (x2 - x1)^2 + (y2 - y1)^2 + (z2 - z1)^2 )
+        
+        x1, y1, z1 = ca.s * cos(deg2rad(ca.h)), ca.s * sin(deg2rad(ca.h)), ca.v
+        x2, y2, z2 = cb.s * cos(deg2rad(cb.h)), cb.s * sin(deg2rad(cb.h)), cb.v
+
+        return sqrt((x2 - x1)^2 + (y2 - y1)^2 + (z2 - z1)^2)
     end
 end
 
