@@ -120,10 +120,10 @@ function get_average_color(SectionImg::AbstractArray{RGB{N0f8}},Dist::Matrix{<:R
 end
 
 """
-function get_average_color_cu(SectionImg::AbstractArray{RGB{N0f8}},Dist::Matrix{<:Real},hPeaks::Vector{Int},range::Int=5)
+function get_average_color_cu(SectionImg::AbstractArray{RGB{N0f8}},Dist::Matrix{<:Real},hPeaks::Vector{Int},range::Int=4)
 same as get_average_color but use instead copper color
 """
-function get_average_color_cu(SectionImg::AbstractArray{RGB{N0f8}},Dist::Matrix{<:Real},hPeaks::Vector{Int},range::Int=5)
+function get_average_color_cu(SectionImg::AbstractArray{RGB{N0f8}},Dist::Matrix{<:Real},hPeaks::Vector{Int},range::Int=4)
     average_color_vector = []
     for h = 1 : 1 : length(hPeaks)
         #if too close to border then do not consider the point
