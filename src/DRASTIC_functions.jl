@@ -213,3 +213,19 @@ function correct_slope_y(datos::Matrix{<:Real}, slope_y::Real)
     end
     return [datos[:,1] datos[:,2] new_signal]
 end
+
+
+"""
+function get_shadow_correction(cx::Float64,cy::Float64,x1::Float64,y1::Float64,calibration::Float64,d_camera_anode::Float64)
+Apply a shadow correction to determine the transparency of anodes, all values are in mm
+"""
+function get_shadow_correction(cx::Float64,cy::Float64,x1::Float64,y1::Float64,calibration::Float64,d_camera_anode::Float64)
+    r = 1.2 #expected hole diameter
+    Area_perfect = pi * r^2
+    Anode_tickness = 3.2 #in mm
+    camera_to_anode = d_camera_anode # in mm to be measured in your setup
+    d_to_center = sqrt( (x1-cx)^2 + (y1-cy)^2 )/calibration ## in mm
+    Δ = (Anode_tickness/camera_to_anode)*d_to_center 
+    Area = 2*r^2*acos(Δ/2*r) - Δ*sqrt(r^2 - (Δ/2)^2) #Expected correction from trigonometric considerations
+    return sqrt(Area/Area_perfect)
+end

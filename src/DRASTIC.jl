@@ -31,6 +31,7 @@ export get_holes_basic_info
 export rotate
 export get_index_rows
 export get_pitch
+export get_shadow_correction
 export get_calibration_factor
 export get_section_merged
 export get_section_merged_diameter
