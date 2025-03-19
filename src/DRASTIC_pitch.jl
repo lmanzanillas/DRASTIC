@@ -123,7 +123,7 @@ function get_section_merged_diameter(base_dir::String,photo_list::Vector{Int64},
     y_cut_high = y_size - cut_y_l
     for photo in photo_list
         counter += 1
-        my_file = filter(x->occursin("0"*string(photo)*".h5",x),  h5_files)
+        my_file = filter(x->occursin(string(photo)*".h5",x),  h5_files)
         if length(my_file) == 0
             continue
         end
