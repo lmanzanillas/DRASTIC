@@ -35,6 +35,7 @@ export get_shadow_correction
 export get_calibration_factor
 export get_section_merged
 export get_section_merged_diameter
+export get_section_merged_diameter_shadow
 
 include("DRASTIC_functions.jl")
 include("DRASTIC_segmentation.jl")
