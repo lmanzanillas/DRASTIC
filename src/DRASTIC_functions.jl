@@ -229,3 +229,40 @@ function get_shadow_correction(cx::Float64,cy::Float64,x1::Float64,y1::Float64,c
     Area = 2*r^2*acos(Δ/2*r) - Δ*sqrt(r^2 - (Δ/2)^2) #Expected correction from trigonometric considerations
     return sqrt(Area/Area_perfect)
 end
+
+function photo_analysis(my_photos)
+    print("Beginning photo analysis")
+    pcb_type = "test_pcb_type"
+
+    for photo_i in my_photos
+        testing_img_alba = load(photo_i)
+        div_img, indexv = divide_img_sq(testing_img_alba,448);
+        d_selection = []
+        for section in div_img 
+            gray_img = Gray.(section)
+            # 2. Gaussian Blur to reduce noise
+            #se = standard_cube(2) # Structuring element
+            #blurred = top_hat(gray_img) # Highlights dark structures on bright backgrounds
+            blurred = imfilter(gray_img, Kernel.gaussian(2))
+            window_size = 95  #1.5*63 adjust depending on hole size (must be odd number)
+            percentage  = 15.0
+            binary_section = .!Bool.(binarize(blurred, Otsu()))
+            #binary_section = .!Bool.(binarize(blurred, AdaptiveThreshold(percentage = percentage, window_size = window_size)))
+            #binary_section = .!Bool.(binarize(blurred, AdaptiveThreshold(percentage = 15, window_size = 31)))
+            push!(d_selection,binary_section)
+        end
+        #We merge all sections
+        full_bin = merge_divided_binary_img(d_selection,indexv)
+        full_bin = full_bin[end:-1:1,:]
+        results = get_holes_basic_info(full_bin,min_area_hole,max_area_hole)
+        p = get_pitch(results,calib,0.2)
+        #println(results)
+        #We use the name of the photo to use in the h5 file with the results
+        pname = photo_i[end-10:end-4]
+        println(pname)
+        h5open("./$(pcb_type)/my_result_QC_Proto_$(pcb_type)_photo_$(pname).h5", "w") do file
+            write(file, "Diameter", results)
+            write(file, "Pitch", p)
+        end
+    end
+end

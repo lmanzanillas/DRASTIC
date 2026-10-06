@@ -7,6 +7,7 @@ using ImageFeatures
 using FileIO
 using Plots
 using ImageComponentAnalysis
+using ImageBinarization
 using ImageFiltering
 using Statistics
 using StatsBase
