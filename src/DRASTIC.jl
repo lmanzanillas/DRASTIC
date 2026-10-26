@@ -36,6 +36,8 @@ export get_calibration_factor
 export get_section_merged
 export get_section_merged_diameter
 export get_section_merged_diameter_shadow
+export binarize_tiled
+export indiv_photo_analysis
 
 include("DRASTIC_functions.jl")
 include("DRASTIC_segmentation.jl")

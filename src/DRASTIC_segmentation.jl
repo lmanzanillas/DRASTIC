@@ -1,4 +1,113 @@
 """
+    indiv_photo_analysis(photo_path, pixel_per_mm=29.93, pitch_dir_angle=150., method="Otsu";
+                         tile=448, hole_diameter_mm=2.4, area_range_mm=(1.5, 2.9),
+                         pitch_window=0.6, outlier_band=0.4)
+ 
+Detect holes in `photo_path` and compute the pitch along `pitch_dir_angle`.
+ 
+Returns `(p, μ)`:
+  * `p`: matrix with columns x [px], y [px], pitch [mm], outliers removed
+  * `μ`: mean pitch [mm] of the remaining points (`NaN` if nothing was found)
+"""
+function indiv_photo_analysis(photo_path::AbstractString,
+                              pixel_per_mm = 29.93,
+                              pitch_dir_angle = 150.,
+                              method = "Otsu";
+                              tile::Int = 448,
+                              hole_diameter_mm = 2.4,
+                              area_range_mm = (1.5, 2.9),
+                              pitch_window = 0.6,
+                              outlier_band = 0.4)
+    @info "Starting individual photo analysis" photo_path
+    calib = pixel_per_mm
+    min_area_hole = π*(calib*area_range_mm[1]/2)^2
+    max_area_hole = π*(calib*area_range_mm[2]/2)^2
+ 
+    anode_image = load(photo_path)
+ 
+    # overlap of about one hole diameter
+    overlap = round(Int, hole_diameter_mm*calib)
+    full_bin = binarize_tiled(anode_image; tile = tile, overlap = overlap, method = method)
+ 
+    # flip vertically so that y points up in the plot
+    full_bin = full_bin[end:-1:1, :]
+ 
+    results = get_holes_basic_info(full_bin, min_area_hole, max_area_hole)
+    data = rotate(results, pitch_dir_angle)
+    p = get_pitch(data, calib, pitch_window)
+    p = rotate(p, -pitch_dir_angle)   # rotate back by the same angle
+ 
+    if isempty(p)
+        @warn "No pitch values found" photo_path
+        return p, NaN
+    end
+ 
+    # robust outlier filter around the median, then recompute the mean
+    m = median(p[:, 3])
+    p = p[abs.(p[:, 3] .- m) .< outlier_band, :]
+    μ = isempty(p) ? NaN : mean(p[:, 3])
+    return p, μ
+end
+
+
+
+"""
+    binarize_tiled(img; tile=448, overlap=75, method="Otsu", sigma=2,
+                   window_size=109, percentage=15.0) -> BitMatrix
+ 
+Binarize `img` tile by tile (local thresholds, to cope with uneven lighting),
+but compute each tile's blur and threshold on a padded window that extends
+`overlap` pixels beyond the tile on every side (clamped at the image border).
+Only the central `tile x tile` core is written to the output, so:
+ 
+  * the Gaussian blur never sees an artificial border inside the image,
+  * neighbouring tiles get nearly the same threshold, because their padded
+    windows share a wide band of pixels,
+  * no separate divide/merge step or index bookkeeping is needed.
+ 
+Returns `true` where a hole (dark region) is detected, in the same orientation
+as `img`.
+ 
+Choose `overlap` of about one hole diameter (2.4 mm * pixel_per_mm, about 72 px
+here), and at least 3*sigma.
+"""
+function binarize_tiled(img::AbstractMatrix; tile::Int = 448, overlap::Int = 75,
+                        method::AbstractString = "Otsu", sigma = 2,
+                        window_size::Int = 109, percentage::Real = 15.0)
+    method in ("Otsu", "AdaptiveThreshold") || error("Unknown method: $method")
+    H, W = size(img)
+    full_bin = falses(H, W)
+    kern = Kernel.gaussian(sigma)
+ 
+    for r0 in 1:tile:H, c0 in 1:tile:W
+        # core region (what we keep)
+        r1 = min(r0 + tile - 1, H)
+        c1 = min(c0 + tile - 1, W)
+        # padded region (what we process)
+        pr0 = max(r0 - overlap, 1);  pr1 = min(r1 + overlap, H)
+        pc0 = max(c0 - overlap, 1);  pc1 = min(c1 + overlap, W)
+ 
+        section = img[pr0:pr1, pc0:pc1]
+        blurred = imfilter(section, kern)
+ 
+        bw = if method == "Otsu"
+            .!Bool.(binarize(blurred, Otsu()))
+        else
+            .!Bool.(binarize(blurred, AdaptiveThreshold(percentage = percentage,
+                                                        window_size = window_size)))
+        end
+ 
+        # crop the padded result back to the core
+        rr = (r0 - pr0 + 1):(r1 - pr0 + 1)
+        cc = (c0 - pc0 + 1):(c1 - pc0 + 1)
+        full_bin[r0:r1, c0:c1] = bw[rr, cc]
+    end
+    return full_bin
+end
+
+
+
+"""
 function collect_groups(labels)
 function to collect the labels and improve in efficiency
 """
