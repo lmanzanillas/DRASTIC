@@ -46,7 +46,7 @@ function indiv_photo_analysis(photo_path::AbstractString,
     m = median(p[:, 3])
     p = p[abs.(p[:, 3] .- m) .< outlier_band, :]
     μ = isempty(p) ? NaN : mean(p[:, 3])
-    return p, μ
+    return p, μ, results
 end
 
 
